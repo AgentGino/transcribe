@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Speech to Text</title>
+    <style>
+      body {
+          font-family: Arial, sans-serif;
+          margin: 0;
+          padding: 20px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+      }
+      
+      button {
+          margin: 10px;
+          padding: 10px 20px;
+          font-size: 16px;
+          cursor: pointer;
+          border: none
+      }
+      
+      #start-btn {
+        background-color: green;
+        color: white;
+      }
+      
+      #stop-btn {
+        background-color: red;
+        color: white;
+        display: none
+      }
+      
+      #transcript {
+          margin-top: 20px;
+      }
+    </style>
+</head>
+<body>
+    <button id="start-btn">Start Listening</button>
+    <button id="stop-btn">Stop Listening</button>
+    <div id="transcript">Transcript: </div>
+    <script>
+      document.getElementById('start-btn').addEventListener('click', () => {
+          startSpeechRecognition();
+          document.getElementById('start-btn').style.display = 'none'; // Hide start button
+          document.getElementById('stop-btn').style.display = 'block';      // Show stop button
+      });
+      
+      document.getElementById('stop-btn').addEventListener('click', () => {
+          stopSpeechRecognition();
+          document.getElementById('start-btn').style.display = 'block';      // Show start button
+          document.getElementById('stop-btn').style.display = 'none'; // Hide stop button
+      });
+      
+      const transcript = document.getElementById('transcript');
+      let recognition = new webkitSpeechRecognition() || new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+      
+      recognition.onresult = function(event) {
+          let current = event.resultIndex;
+          let transcriptText = event.results[current][0].transcript;
+          transcript.innerHTML = 'Transcript: ' + transcriptText;
+      };
+      
+      function startSpeechRecognition() {
+          try {
+              recognition.start();
+          } catch (e) {
+              console.error(e);
+          }
+      }
+      
+      function stopSpeechRecognition() {
+          recognition.stop();
+      }
+      
+      // Handling errors
+      recognition.onerror = function(event) {
+          console.error('Speech recognition error', event.error);
+      }
+
+    </script>
+</body>
+</html>
